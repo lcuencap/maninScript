@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c9ca9c9-ee0d-4038-9439-e2db13d6ebc9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/maninScript.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ast/ASTNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ast/GlobalElementNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ast/ProgramNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/common/SourcePosition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lexer/Lexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lexer/LexicalException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lexer/Token.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lexer/TokenType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/Parser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/parser/ParserException.java" afterDir="false" />
-    </list>
+    <list default="true" id="2c9ca9c9-ee0d-4038-9439-e2db13d6ebc9" name="Changes" comment="Primer commit amb primer borrador d'estructura" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,6 +49,19 @@
       <option name="presentableId" value="Default" />
       <updated>1774985889550</updated>
     </task>
+    <task id="LOCAL-00001" summary="Primer commit amb primer borrador d'estructura">
+      <option name="closed" value="true" />
+      <created>1774987063448</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1774987063448</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Primer commit amb primer borrador d'estructura" />
+    <option name="LAST_COMMIT_MESSAGE" value="Primer commit amb primer borrador d'estructura" />
   </component>
 </project>
