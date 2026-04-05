@@ -4,7 +4,7 @@ public enum TokenType {
     UN_TAL, 
     A_MUERTE, 
     FIJATE_SI, 
-    YSINO, 
+    Y_SI_NO, 
     SEGUN_VEA, 
     LA_FAENA, 
     SUELTA, 
