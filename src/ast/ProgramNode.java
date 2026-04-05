@@ -3,13 +3,13 @@ package ast;
 import java.util.List;
 
 public class ProgramNode extends ASTNode {
-    private final List<GlobalElementNode> globalElements;
+    private final List<GlobalElement> globalElements;
 
-    public ProgramNode(List<GlobalElementNode> globalElements) {
+    public ProgramNode(List<GlobalElement> globalElements) {
         this.globalElements = globalElements;
     }
 
-    public List<GlobalElementNode> getGlobalElements() {
+    public List<GlobalElement> getGlobalElements() {
         return globalElements;
     }
 }

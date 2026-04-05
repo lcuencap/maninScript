@@ -1,9 +1,8 @@
 package ast.statements;
 
-import ast.GlobalElementNode;
 import ast.expressions.ExpressionNode;
 
-public class DeclarationNode extends GlobalElementNode {
+public class DeclarationNode extends StatementNode implements ast.GlobalElement {
     private final boolean constant;
     private final String typeName;
     private final String identifier;
