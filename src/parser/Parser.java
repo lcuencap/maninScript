@@ -295,8 +295,9 @@ public class Parser {
     }
 
     private ExpressionNode parsePrimary() {
-        if (match(TokenType.INT_LITERAL, TokenType.FLOAT_LITERAL, TokenType.STRING_LITERAL,
-                TokenType.JURAO, TokenType.BULO)) {
+        if (match(TokenType.INT_LITERAL, TokenType.FLOAT_LITERAL,
+          TokenType.CHAR_LITERAL, TokenType.STRING_LITERAL,
+          TokenType.JURAO, TokenType.BULO)) {
             return new LiteralExprNode(previous().getLexeme());
         }
 
