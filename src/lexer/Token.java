@@ -1,50 +1,41 @@
 package lexer;
 
 public class Token {
-    /*
-    Assumeixo que tens o tindràs aquestes coses:
-        Token
-            TokenType getType()
-            String getLexeme()
-            int getLine()
-            int getColumn()
+    private final TokenType type;
+    private final String lexeme;
+    private final int line;
+    private final int column;
 
-        TokenType amb noms similars a:
-            EOF
-            UN_TAL, A_MUERTE
-            FIJATE_SI, YSINO, SEGUN_VEA
-            LA_FAENA, SUELTA, DI
-            NA_DE_NA
-            PAVOS, APACHAS, CARRO, JURA
-            JURAO, BULO
-            IDENTIFIER
-            INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL
-            LPAREN, RPAREN, LBRACE, RBRACE
-            SEMICOLON, COMMA, ASSIGN
-            PLUS, MINUS, STAR, SLASH
-            OR, AND
-            EQUAL_EQUAL, LESS, GREATER, LESS_EQUAL, GREATER_EQUAL
+    public Token(TokenType type, String lexeme, int line, int column) {
+        this.type = type;
+        this.lexeme = lexeme;
+        this.line = line;
+        this.column = column;
+    }
 
-        AST base
-            ProgramNode
-            GlobalElementNode
-            StatementNode
-            BlockNode
-            DeclarationNode
-            AssignmentNode
-            PrintNode
-            IfNode
-            WhileNode
-            FunctionDeclNode
-            ReturnNode
-            ParameterNode
-            ExpressionNode
+    public TokenType getType() {
+        return type;
+    }
 
-        subclasses d’expressió com:
-            BinaryExprNode
-            UnaryExprNode
-            LiteralExprNode
-            IdentifierExprNode
-    */
+    public String getLexeme() {
+        return lexeme;
+    }
 
+    public int getLine() {
+        return line;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "type=" + type +
+                ", lexeme='" + lexeme + '\'' +
+                ", line=" + line +
+                ", column=" + column +
+                '}';
+    }
 }
