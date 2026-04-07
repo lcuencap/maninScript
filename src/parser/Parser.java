@@ -3,6 +3,7 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import ast.ASTNode;
 import ast.GlobalElement;
 import ast.ProgramNode;
 import ast.expressions.BinaryExprNode;
@@ -34,6 +35,7 @@ public class Parser {
     }
 
     public ProgramNode parseProgram() {
+        Token first = peek();
         List<GlobalElement> globals = new ArrayList<>();
 
         while (!isAtEnd()) {
@@ -41,7 +43,7 @@ public class Parser {
         }
 
         consume(TokenType.EOF, "el final del fichero");
-        return new ProgramNode(globals);
+        return at(new ProgramNode(globals), first);
     }
 
     private GlobalElement parseGlobalElement() {
@@ -59,7 +61,7 @@ public class Parser {
     }
 
     private BlockNode parseBlock() {
-        consume(TokenType.LBRACE, "'{' al inicio del bloque");
+        Token lbrace = consume(TokenType.LBRACE, "'{' al inicio del bloque");
         List<StatementNode> statements = new ArrayList<>();
 
         while (!check(TokenType.RBRACE) && !isAtEnd()) {
@@ -67,7 +69,7 @@ public class Parser {
         }
 
         consume(TokenType.RBRACE, "'}' al final del bloque");
-        return new BlockNode(statements);
+        return at(new BlockNode(statements), lbrace);
     }
 
     private StatementNode parseStatement() {
@@ -103,11 +105,14 @@ public class Parser {
 
     private DeclarationNode parseDeclaration() {
         boolean constant;
+        Token keyword;
 
         if (match(TokenType.UN_TAL)) {
             constant = false;
+            keyword = previous();
         } else if (match(TokenType.A_MUERTE)) {
             constant = true;
+            keyword = previous();
         } else {
             throw error(peek(), "'unTal' o 'aMuerte' al inicio de una declaración");
         }
@@ -124,18 +129,18 @@ public class Parser {
             initializer = parseExpression();
         }
 
-        return new DeclarationNode(constant, type, id.getLexeme(), initializer);
+        return at(new DeclarationNode(constant, type, id.getLexeme(), initializer), keyword);
     }
 
     private AssignmentNode parseAssignment() {
         Token id = consume(TokenType.IDENTIFIER, "un identificador en la asignación");
         consume(TokenType.ASSIGN, "'=' en la asignación");
         ExpressionNode expr = parseExpression();
-        return new AssignmentNode(id.getLexeme(), expr);
+        return at(new AssignmentNode(id.getLexeme(), expr), id);
     }
 
     private PrintNode parsePrintStatement() {
-        consume(TokenType.DI, "'di!' al inicio de la sentencia de impresión");
+        Token kw = consume(TokenType.DI, "'di!' al inicio de la sentencia de impresión");
         consume(TokenType.LPAREN, "'(' después de 'di!'");
 
         List<ExpressionNode> args = new ArrayList<>();
@@ -147,11 +152,11 @@ public class Parser {
         }
 
         consume(TokenType.RPAREN, "')' al final de los argumentos de 'di!'");
-        return new PrintNode(args);
+        return at(new PrintNode(args), kw);
     }
 
     private IfNode parseIfStatement() {
-        consume(TokenType.FIJATE_SI, "'fijateSi' al inicio del condicional");
+        Token kw = consume(TokenType.FIJATE_SI, "'fijateSi' al inicio del condicional");
         consume(TokenType.LPAREN, "'(' después de 'fijateSi'");
         ExpressionNode condition = parseExpression();
         consume(TokenType.RPAREN, "')' después de la condición del 'fijateSi'");
@@ -163,21 +168,21 @@ public class Parser {
             elseBlock = parseBlock();
         }
 
-        return new IfNode(condition, thenBlock, elseBlock);
+        return at(new IfNode(condition, thenBlock, elseBlock), kw);
     }
 
     private WhileNode parseWhileStatement() {
-        consume(TokenType.SEGUN_VEA, "'segúnVea' al inicio del bucle");
+        Token kw = consume(TokenType.SEGUN_VEA, "'segúnVea' al inicio del bucle");
         consume(TokenType.LPAREN, "'(' después de 'segúnVea'");
         ExpressionNode condition = parseExpression();
         consume(TokenType.RPAREN, "')' después de la condición del 'segúnVea'");
         BlockNode body = parseBlock();
 
-        return new WhileNode(condition, body);
+        return at(new WhileNode(condition, body), kw);
     }
 
     private FunctionDeclNode parseFunctionDecl() {
-        consume(TokenType.LA_FAENA, "'laFaena' al inicio de la definición de función");
+        Token kw = consume(TokenType.LA_FAENA, "'laFaena' al inicio de la definición de función");
 
         String returnType = match(TokenType.NA_DE_NA) ? "naDeNa" : parseType();
 
@@ -195,24 +200,24 @@ public class Parser {
         consume(TokenType.RPAREN, "')' al final de la lista de parámetros");
         BlockNode body = parseBlock();
 
-        return new FunctionDeclNode(returnType, name.getLexeme(), params, body);
+        return at(new FunctionDeclNode(returnType, name.getLexeme(), params, body), kw);
     }
 
     private ParameterNode parseParameter() {
         String type = parseType();
         Token id = consume(TokenType.IDENTIFIER, "el identificador del parámetro");
-        return new ParameterNode(type, id.getLexeme());
+        return at(new ParameterNode(type, id.getLexeme()), id);
     }
 
     private ReturnNode parseReturnStatement() {
-        consume(TokenType.SUELTA, "'suelta' al inicio de la sentencia de retorno");
+        Token kw = consume(TokenType.SUELTA, "'suelta' al inicio de la sentencia de retorno");
         ExpressionNode value = null;
 
         if (!check(TokenType.SEMICOLON)) {
             value = parseExpression();
         }
 
-        return new ReturnNode(value);
+        return at(new ReturnNode(value), kw);
     }
 
     private String parseType() {
@@ -233,9 +238,9 @@ public class Parser {
         ExpressionNode expr = parseAnd();
 
         while (match(TokenType.OR)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseAnd();
-            expr = new BinaryExprNode(expr, op, right);
+            expr = at(new BinaryExprNode(expr, opTok.getLexeme(), right), opTok);
         }
         return expr;
     }
@@ -244,9 +249,9 @@ public class Parser {
         ExpressionNode expr = parseComparison();
 
         while (match(TokenType.AND)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseComparison();
-            expr = new BinaryExprNode(expr, op, right);
+            expr = at(new BinaryExprNode(expr, opTok.getLexeme(), right), opTok);
         }
         return expr;
     }
@@ -256,9 +261,9 @@ public class Parser {
 
         while (match(TokenType.EQUAL_EQUAL, TokenType.LESS, TokenType.GREATER,
                 TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseAddition();
-            expr = new BinaryExprNode(expr, op, right);
+            expr = at(new BinaryExprNode(expr, opTok.getLexeme(), right), opTok);
         }
         return expr;
     }
@@ -267,9 +272,9 @@ public class Parser {
         ExpressionNode expr = parseMultiplication();
 
         while (match(TokenType.PLUS, TokenType.MINUS)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseMultiplication();
-            expr = new BinaryExprNode(expr, op, right);
+            expr = at(new BinaryExprNode(expr, opTok.getLexeme(), right), opTok);
         }
         return expr;
     }
@@ -278,18 +283,18 @@ public class Parser {
         ExpressionNode expr = parseUnary();
 
         while (match(TokenType.STAR, TokenType.SLASH)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseUnary();
-            expr = new BinaryExprNode(expr, op, right);
+            expr = at(new BinaryExprNode(expr, opTok.getLexeme(), right), opTok);
         }
         return expr;
     }
 
     private ExpressionNode parseUnary() {
         if (match(TokenType.PLUS, TokenType.MINUS)) {
-            String op = previous().getLexeme();
+            Token opTok = previous();
             ExpressionNode right = parseUnary();
-            return new UnaryExprNode(op, right);
+            return at(new UnaryExprNode(opTok.getLexeme(), right), opTok);
         }
         return parsePrimary();
     }
@@ -298,7 +303,8 @@ public class Parser {
         if (match(TokenType.INT_LITERAL, TokenType.FLOAT_LITERAL,
           TokenType.CHAR_LITERAL, TokenType.STRING_LITERAL,
           TokenType.JURAO, TokenType.BULO)) {
-            return new LiteralExprNode(previous().getLexeme());
+            Token lit = previous();
+            return at(new LiteralExprNode(lit.getLexeme()), lit);
         }
 
         if (match(TokenType.IDENTIFIER)) {
@@ -313,10 +319,10 @@ public class Parser {
                     }
                 }
                 consume(TokenType.RPAREN, "')' al final de la llamada a función");
-                return new CallExprNode(id.getLexeme(), args);
+                return at(new CallExprNode(id.getLexeme(), args), id);
             }
 
-            return new IdentifierExprNode(id.getLexeme());
+            return at(new IdentifierExprNode(id.getLexeme()), id);
         }
 
         if (match(TokenType.LPAREN)) {
@@ -367,5 +373,10 @@ public class Parser {
 
     private ParserException error(Token token, String expected) {
         return new ParserException(token, expected);
+    }
+
+    private <T extends ASTNode> T at(T node, Token token) {
+        node.setPosition(token.getLine(), token.getColumn());
+        return node;
     }
 }

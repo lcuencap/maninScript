@@ -1,4 +1,4 @@
-import ast.ASTPrinter;
+import ast.ASTVisualizer;
 import ast.ProgramNode;
 import lexer.Lexer;
 import lexer.Token;
@@ -30,6 +30,7 @@ public class Main {
 
         Parser parser = new Parser(tokens);
         ProgramNode program = parser.parseProgram();
-        System.out.print(ASTPrinter.print(program));
+
+        ASTVisualizer.show(program, source);
     }
 }
