@@ -40,7 +40,7 @@ public class Parser {
             globals.add(parseGlobalElement());
         }
 
-        consume(TokenType.EOF, "S'esperava final de fitxer.");
+        consume(TokenType.EOF, "el final del fichero");
         return new ProgramNode(globals);
     }
 
@@ -51,35 +51,35 @@ public class Parser {
 
         if (check(TokenType.UN_TAL) || check(TokenType.A_MUERTE)) {
             DeclarationNode decl = parseDeclaration();
-            consume(TokenType.SEMICOLON, "S'esperava ';' després de la declaració global.");
+            consume(TokenType.SEMICOLON, "';' después de la declaración global");
             return decl;
         }
 
-        throw error(peek(), "S'esperava una declaració global o una funció.");
+        throw error(peek(), "una declaración global o una definición de función");
     }
 
     private BlockNode parseBlock() {
-        consume(TokenType.LBRACE, "S'esperava '{'.");
+        consume(TokenType.LBRACE, "'{' al inicio del bloque");
         List<StatementNode> statements = new ArrayList<>();
 
         while (!check(TokenType.RBRACE) && !isAtEnd()) {
             statements.add(parseStatement());
         }
 
-        consume(TokenType.RBRACE, "S'esperava '}'.");
+        consume(TokenType.RBRACE, "'}' al final del bloque");
         return new BlockNode(statements);
     }
 
     private StatementNode parseStatement() {
         if (check(TokenType.UN_TAL) || check(TokenType.A_MUERTE)) {
             DeclarationNode decl = parseDeclaration();
-            consume(TokenType.SEMICOLON, "S'esperava ';' després de la declaració.");
+            consume(TokenType.SEMICOLON, "';' después de la declaración");
             return decl;
         }
 
         if (check(TokenType.IDENTIFIER)) {
             AssignmentNode assignment = parseAssignment();
-            consume(TokenType.SEMICOLON, "S'esperava ';' després de l'assignació.");
+            consume(TokenType.SEMICOLON, "';' después de la asignación");
             return assignment;
         }
 
@@ -88,17 +88,17 @@ public class Parser {
 
         if (check(TokenType.SUELTA)) {
             ReturnNode ret = parseReturnStatement();
-            consume(TokenType.SEMICOLON, "S'esperava ';' després del return.");
+            consume(TokenType.SEMICOLON, "';' después de la sentencia 'suelta'");
             return ret;
         }
 
         if (check(TokenType.DI)) {
             PrintNode print = parsePrintStatement();
-            consume(TokenType.SEMICOLON, "S'esperava ';' després del print.");
+            consume(TokenType.SEMICOLON, "';' después de la sentencia 'di!'");
             return print;
         }
 
-        throw error(peek(), "Sentència no vàlida.");
+        throw error(peek(), "una sentencia válida (declaración, asignación, 'fijateSi', 'segúnVea', 'suelta' o 'di!')");
     }
 
     private DeclarationNode parseDeclaration() {
@@ -109,16 +109,16 @@ public class Parser {
         } else if (match(TokenType.A_MUERTE)) {
             constant = true;
         } else {
-            throw error(peek(), "S'esperava 'unTal' o 'aMuerte'.");
+            throw error(peek(), "'unTal' o 'aMuerte' al inicio de una declaración");
         }
 
         String type = parseType();
-        Token id = consume(TokenType.IDENTIFIER, "S'esperava identificador.");
+        Token id = consume(TokenType.IDENTIFIER, "un identificador en la declaración");
 
         ExpressionNode initializer = null;
 
         if (constant) {
-            consume(TokenType.ASSIGN, "Una constant ha de tenir inicialització.");
+            consume(TokenType.ASSIGN, "'=' (una constante 'aMuerte' debe inicializarse en su declaración)");
             initializer = parseExpression();
         } else if (match(TokenType.ASSIGN)) {
             initializer = parseExpression();
@@ -128,15 +128,15 @@ public class Parser {
     }
 
     private AssignmentNode parseAssignment() {
-        Token id = consume(TokenType.IDENTIFIER, "S'esperava identificador.");
-        consume(TokenType.ASSIGN, "S'esperava '='.");
+        Token id = consume(TokenType.IDENTIFIER, "un identificador en la asignación");
+        consume(TokenType.ASSIGN, "'=' en la asignación");
         ExpressionNode expr = parseExpression();
         return new AssignmentNode(id.getLexeme(), expr);
     }
 
     private PrintNode parsePrintStatement() {
-        consume(TokenType.DI, "S'esperava 'di!'.");
-        consume(TokenType.LPAREN, "S'esperava '('.");
+        consume(TokenType.DI, "'di!' al inicio de la sentencia de impresión");
+        consume(TokenType.LPAREN, "'(' después de 'di!'");
 
         List<ExpressionNode> args = new ArrayList<>();
         if (!check(TokenType.RPAREN)) {
@@ -146,15 +146,15 @@ public class Parser {
             }
         }
 
-        consume(TokenType.RPAREN, "S'esperava ')'.");
+        consume(TokenType.RPAREN, "')' al final de los argumentos de 'di!'");
         return new PrintNode(args);
     }
 
     private IfNode parseIfStatement() {
-        consume(TokenType.FIJATE_SI, "S'esperava 'fijateSi'.");
-        consume(TokenType.LPAREN, "S'esperava '(' després de fijateSi.");
+        consume(TokenType.FIJATE_SI, "'fijateSi' al inicio del condicional");
+        consume(TokenType.LPAREN, "'(' después de 'fijateSi'");
         ExpressionNode condition = parseExpression();
-        consume(TokenType.RPAREN, "S'esperava ')' després de la condició.");
+        consume(TokenType.RPAREN, "')' después de la condición del 'fijateSi'");
 
         BlockNode thenBlock = parseBlock();
         BlockNode elseBlock = null;
@@ -167,22 +167,22 @@ public class Parser {
     }
 
     private WhileNode parseWhileStatement() {
-        consume(TokenType.SEGUN_VEA, "S'esperava 'segunVea'.");
-        consume(TokenType.LPAREN, "S'esperava '(' després de segunVea.");
+        consume(TokenType.SEGUN_VEA, "'segúnVea' al inicio del bucle");
+        consume(TokenType.LPAREN, "'(' después de 'segúnVea'");
         ExpressionNode condition = parseExpression();
-        consume(TokenType.RPAREN, "S'esperava ')' després de la condició.");
+        consume(TokenType.RPAREN, "')' después de la condición del 'segúnVea'");
         BlockNode body = parseBlock();
 
         return new WhileNode(condition, body);
     }
 
     private FunctionDeclNode parseFunctionDecl() {
-        consume(TokenType.LA_FAENA, "S'esperava 'laFaena'.");
+        consume(TokenType.LA_FAENA, "'laFaena' al inicio de la definición de función");
 
         String returnType = match(TokenType.NA_DE_NA) ? "naDeNa" : parseType();
 
-        Token name = consume(TokenType.IDENTIFIER, "S'esperava el nom de la funció.");
-        consume(TokenType.LPAREN, "S'esperava '('.");
+        Token name = consume(TokenType.IDENTIFIER, "el nombre de la función");
+        consume(TokenType.LPAREN, "'(' después del nombre de la función");
 
         List<ParameterNode> params = new ArrayList<>();
         if (!check(TokenType.RPAREN)) {
@@ -192,7 +192,7 @@ public class Parser {
             }
         }
 
-        consume(TokenType.RPAREN, "S'esperava ')'.");
+        consume(TokenType.RPAREN, "')' al final de la lista de parámetros");
         BlockNode body = parseBlock();
 
         return new FunctionDeclNode(returnType, name.getLexeme(), params, body);
@@ -200,12 +200,12 @@ public class Parser {
 
     private ParameterNode parseParameter() {
         String type = parseType();
-        Token id = consume(TokenType.IDENTIFIER, "S'esperava identificador de paràmetre.");
+        Token id = consume(TokenType.IDENTIFIER, "el identificador del parámetro");
         return new ParameterNode(type, id.getLexeme());
     }
 
     private ReturnNode parseReturnStatement() {
-        consume(TokenType.SUELTA, "S'esperava 'suelta'.");
+        consume(TokenType.SUELTA, "'suelta' al inicio de la sentencia de retorno");
         ExpressionNode value = null;
 
         if (!check(TokenType.SEMICOLON)) {
@@ -222,7 +222,7 @@ public class Parser {
         if (match(TokenType.JURA)) return "jura";
         if (match(TokenType.LETRILLA)) return "letrilla";
 
-        throw error(peek(), "S'esperava un tipus vàlid.");
+        throw error(peek(), "un tipo válido ('pavos', 'aPachas', 'carro', 'letrilla' o 'jura')");
     }
 
     private ExpressionNode parseExpression() {
@@ -312,7 +312,7 @@ public class Parser {
                         args.add(parseExpression());
                     }
                 }
-                consume(TokenType.RPAREN, "S'esperava ')' en la crida a funció.");
+                consume(TokenType.RPAREN, "')' al final de la llamada a función");
                 return new CallExprNode(id.getLexeme(), args);
             }
 
@@ -321,11 +321,11 @@ public class Parser {
 
         if (match(TokenType.LPAREN)) {
             ExpressionNode expr = parseExpression();
-            consume(TokenType.RPAREN, "S'esperava ')'.");
+            consume(TokenType.RPAREN, "')' al cerrar la expresión entre paréntesis");
             return expr;
         }
 
-        throw error(peek(), "S'esperava literal, identificador o expressió entre parèntesis.");
+        throw error(peek(), "un literal, un identificador o una expresión entre paréntesis");
     }
 
     private boolean match(TokenType... types) {
@@ -365,12 +365,7 @@ public class Parser {
         return tokens.get(current - 1);
     }
 
-    private ParserException error(Token token, String message) {
-        return new ParserException(
-                "Error sintàctic a línia " + token.getLine() +
-                ", columna " + token.getColumn() +
-                ": " + message +
-                " Token trobat: '" + token.getLexeme() + "'"
-        );
+    private ParserException error(Token token, String expected) {
+        return new ParserException(token, expected);
     }
 }
