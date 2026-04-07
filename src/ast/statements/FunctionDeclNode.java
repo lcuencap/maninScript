@@ -1,9 +1,10 @@
 package ast.statements;
 
 import java.util.List;
+import ast.ASTNode;
 import ast.GlobalElement;
 
-public class FunctionDeclNode extends ast.ASTNode implements GlobalElement {
+public class FunctionDeclNode extends ASTNode implements GlobalElement {
     private final String returnType;
     private final String name;
     private final List<ParameterNode> parameters;

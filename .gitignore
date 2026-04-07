@@ -30,3 +30,10 @@ bin/
 
 ### Java ###
 *.class
+
+# context
+CLAUDE.md
+.claude/
+maninScript.txt
+.idea/
+maninScript.pdf

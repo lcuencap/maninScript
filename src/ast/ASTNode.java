@@ -1,4 +1,4 @@
 package ast;
 
-public class ASTNode {
+public abstract class ASTNode {
 }

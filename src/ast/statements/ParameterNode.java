@@ -1,6 +1,8 @@
 package ast.statements;
 
-public class ParameterNode {
+import ast.ASTNode;
+
+public class ParameterNode extends ASTNode {
     private final String typeName;
     private final String identifier;
 
