@@ -1,5 +1,8 @@
+import ast.ASTVisualizer;
+import ast.ProgramNode;
 import lexer.Lexer;
 import lexer.Token;
+import parser.Parser;
 
 import java.util.List;
 
@@ -24,5 +27,10 @@ public class Main {
         for (Token token : tokens) {
             System.out.println(token);
         }
+
+        Parser parser = new Parser(tokens);
+        ProgramNode program = parser.parseProgram();
+
+        ASTVisualizer.show(program, source);
     }
 }
