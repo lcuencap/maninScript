@@ -35,6 +35,6 @@ bin/
 CLAUDE.md
 .claude/
 maninScript.txt
-.idea/
+.idea/*
 maninScript.pdf
 src/PLAN.md

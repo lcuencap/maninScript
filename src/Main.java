@@ -1,3 +1,5 @@
+import ast.ASTPrinter;
+import ast.ProgramNode;
 import lexer.Lexer;
 import lexer.Token;
 import parser.Parser;
@@ -46,8 +48,10 @@ public class Main {
             System.out.println();
         }
 
-        // Caso positivo: el snippet original tiene que parsear sin errores.
-        String fuenteOk = """
+        // === Casos positivos: cubren los puntos delicados de la BNF ===
+        String[] casosOk = {
+                // Original: declaración global, función, if/else, di! con varios args.
+                """
                 aMuerte jura esMayor = jurao;
                 laFaena naDeNa saluda(letrilla nombre) {
                     fijateSi (esMayor == jurao) {
@@ -56,16 +60,102 @@ public class Main {
                         di!("No puedes pasar");
                     }
                 }
+                """,
+                // Precedencia de expresiones: comprobación a ojo del árbol esperado en Fase 3.
+                // La gramática debe interpretar a + b * -c == d y e o f como
+                //   ((a + (b * (-c))) == d) y e) o f
+                """
+                laFaena pavos calcula(pavos a, pavos b, pavos c, pavos d, jura e, jura f) {
+                    suelta a + b * -c;
+                }
+                """,
+                // if sin else (else_opcional → ε), while con tilde, return sin valor.
+                """
+                laFaena naDeNa bucle(pavos n) {
+                    segúnVea (n > 0) {
+                        di!(n);
+                        n = n - 1;
+                    }
+                    fijateSi (n == 0) {
+                        suelta;
+                    }
+                }
+                """,
+                // Función sin parámetros (parametros_opc → ε) y di! sin argumentos
+                // (args_print_opc → ε). Llamada a función como expresión, anidada.
+                """
+                laFaena pavos cero() { suelta 0; }
+                laFaena pavos suma(pavos a, pavos b) { suelta a + b; }
+                laFaena naDeNa main() {
+                    di!();
+                    di!(suma(cero(), suma(1, 2)));
+                }
+                """,
+                // Constante de cada tipo primitivo + literales bool/char/string/float.
+                """
+                aMuerte pavos    A = 10;
+                aMuerte aPachas  B = 3.14;
+                aMuerte carro    C = 'x';
+                aMuerte letrilla D = "hola";
+                aMuerte jura     E = bulo;
+                """,
+        };
+
+        for (int i = 0; i < casosOk.length; i++) {
+            System.out.println("--- Caso positivo " + (i + 1) + " ---");
+            try {
+                Lexer lexer = new Lexer(casosOk[i]);
+                List<Token> tokens = lexer.scanTokens();
+                Parser parser = new Parser(tokens);
+                parser.parseProgram();
+                System.out.println("OK: aceptado.");
+            } catch (ParserException ex) {
+                System.out.println("INESPERADO: " + ex.getMessage());
+            }
+        }
+
+        // === FASE 3: verificación visual del AST con ASTPrinter ===
+
+        // Precedencia: esperamos el árbol
+        //   Binary ==
+        //     Binary +
+        //       Identifier a
+        //       Binary *
+        //         Identifier b
+        //         Unary -
+        //           Identifier c
+        //     Identifier d
+        String fuentePrecedencia = """
+                laFaena pavos prec(pavos a, pavos b, pavos c, pavos d) {
+                    suelta a + b * -c == d;
+                }
                 """;
-        System.out.println("--- Caso positivo ---");
+        System.out.println();
+        System.out.println("--- AST de precedencia: a + b * -c == d ---");
+        System.out.println(parseYImprimir(fuentePrecedencia));
+
+        // Fibonacci: el objetivo explícito de la sección 5 del PLAN.
+        String fuenteFib = """
+                laFaena pavos fibonacci(pavos n) {
+                    fijateSi (n <= 1) {
+                        suelta n;
+                    }
+                    suelta fibonacci(n - 1) + fibonacci(n - 2);
+                }
+                """;
+        System.out.println("--- AST de Fibonacci ---");
+        System.out.println(parseYImprimir(fuenteFib));
+    }
+
+    private static String parseYImprimir(String fuente) {
         try {
-            Lexer lexer = new Lexer(fuenteOk);
+            Lexer lexer = new Lexer(fuente);
             List<Token> tokens = lexer.scanTokens();
             Parser parser = new Parser(tokens);
-            parser.parseProgram();
-            System.out.println("OK: el parser aceptó el programa válido.");
+            ProgramNode program = parser.parseProgram();
+            return ASTPrinter.print(program);
         } catch (ParserException ex) {
-            System.out.println("INESPERADO: " + ex.getMessage());
+            return "ERROR: " + ex.getMessage();
         }
     }
 }
