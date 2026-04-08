@@ -3,6 +3,7 @@ import ast.ProgramNode;
 import lexer.Lexer;
 import lexer.Token;
 import parser.Parser;
+import semantic.SemanticAnalyzer;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class Main {
 
         Parser parser = new Parser(tokens);
         ProgramNode program = parser.parseProgram();
+
+        SemanticAnalyzer semantic = new SemanticAnalyzer();
+        semantic.analyze(program);
 
         ASTVisualizer.show(program, source);
     }
