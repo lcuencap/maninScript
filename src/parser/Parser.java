@@ -304,7 +304,7 @@ public class Parser {
           TokenType.CHAR_LITERAL, TokenType.STRING_LITERAL,
           TokenType.JURAO, TokenType.BULO)) {
             Token lit = previous();
-            return at(new LiteralExprNode(lit.getLexeme()), lit);
+            return at(new LiteralExprNode(lit.getType(), lit.getLexeme()), lit);
         }
 
         if (match(TokenType.IDENTIFIER)) {

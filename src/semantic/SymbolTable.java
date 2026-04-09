@@ -11,10 +11,11 @@ public class SymbolTable {
         this.parent = parent;
     }
 
+    public boolean isDefinedLocally(String name) {
+        return symbols.containsKey(name);
+    }
+
     public void define(Symbol symbol) {
-        if (symbols.containsKey(symbol.getName())) {
-            throw new RuntimeException("Variable ya declarada: " + symbol.getName());
-        }
         symbols.put(symbol.getName(), symbol);
     }
 
@@ -25,6 +26,6 @@ public class SymbolTable {
         if (parent != null) {
             return parent.resolve(name);
         }
-        throw new RuntimeException("Variable no declarada: " + name);
+        return null;
     }
 }

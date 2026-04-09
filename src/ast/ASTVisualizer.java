@@ -277,7 +277,7 @@ public final class ASTVisualizer {
             return v;
         }
         if (node instanceof LiteralExprNode l) {
-            String grammar = "[" + classifyLiteral(l.getValue()) + "]";
+            String grammar = "[" + classifyLiteral(l) + "]";
             return new VNode("Literal", l.getValue(), grammar, edgeLabel, ln, col);
         }
         if (node instanceof IdentifierExprNode id) {
@@ -297,14 +297,15 @@ public final class ASTVisualizer {
         };
     }
 
-    private static String classifyLiteral(String lex) {
-        if (lex == null || lex.isEmpty()) return "LITERAL";
-        if (lex.equals("jurao") || lex.equals("bulo")) return "BOOL_LITERAL";
-        char c = lex.charAt(0);
-        if (c == '"') return "STRING_LITERAL";
-        if (c == '\'') return "CHAR_LITERAL";
-        if (lex.contains(".")) return "FLOAT_LITERAL";
-        return "INT_LITERAL";
+    private static String classifyLiteral(LiteralExprNode literal) {
+        return switch (literal.getLiteralType()) {
+            case INT_LITERAL -> "INT_LITERAL";
+            case FLOAT_LITERAL -> "FLOAT_LITERAL";
+            case CHAR_LITERAL -> "CHAR_LITERAL";
+            case STRING_LITERAL -> "STRING_LITERAL";
+            case JURAO, BULO -> "BOOL_LITERAL";
+            default -> "LITERAL";
+        };
     }
 
     // ====================================================================
